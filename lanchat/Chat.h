@@ -17,9 +17,10 @@ class Chat
 public:
 	RECT rect;
 	RECT textInput;
-	WCHAR buffer_input[MAX_BUFFER];
+	WCHAR buffer_input[MAX_BUFFER + 1];
 	WCHAR chat[MAX_LINES][MAX_BUFFER];
-	char ip[MAX_LINES][16];
+	
+	char ip[MAX_LINES][17];
 	Cchat cchat[MAX_LINES];
 	int count;
 	int dchat;
@@ -32,6 +33,7 @@ public:
 	int pos_last;
 	SIZE inter_cmd;
 	int len_inter_cmd;
+	DWORD thread_id;
 	Chat();
 	void addChar(HDC, WCHAR c);
 	void backspace(HDC);

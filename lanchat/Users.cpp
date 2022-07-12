@@ -1,6 +1,8 @@
 #include "Users.h"
 #include <string.h>
 
+extern HWND mainHWND;
+
 Users::Users()
 {
 	rect.left = 16;
@@ -13,15 +15,15 @@ Users::Users()
 	title.right = 256;
 	title.bottom = title.top;
 
-	char *user0 = _strdup("192.168.1.2");
-	char *user1 = _strdup("192.168.1.3");
-	char *user2 = _strdup("192.168.1.4");
 
-#if 1
-	users.push_back(user0);
-	users.push_back(user1);
-	users.push_back(user2);
-#endif
+	one = false;
+}
+
+void Users::addUser(char* who)
+{
+	users.push_back(who);
+	//InvalidateRect(mainHWND, &rect, TRUE);
+	PostMessage(mainHWND, WM_PAINT, 0, 0);
 }
 
 void Users::DrawUsersLists(HDC hdc)
@@ -43,7 +45,11 @@ void Users::DrawUsersLists(HDC hdc)
 	SetBkColor(hdc, RGB(0x8d, 0x7c, 0x4e));
 	SetTextColor(hdc, RGB(0xff, 0xff, 0xff));
 
-	title.bottom += size.cy;
+	if (one == false) {
+		title.bottom += size.cy;
+		one = true;
+	}
+	
 
 	FillRect(hdc, &title, hbr);
 

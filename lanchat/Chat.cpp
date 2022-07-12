@@ -19,6 +19,8 @@ Chat::Chat()
 	for (int i = 0; i < MAX_LINES; i++) {
 		memset(chat[i], 0, MAX_BUFFER * 2);
 	}
+
+	thread_id = GetWindowThreadProcessId(mainHWND, NULL);
 }
 
 void Chat::setRect(RECT* r)
@@ -172,6 +174,7 @@ void Chat::draw(HDC hdc)
 		}
 	}
 	
+
 }
 
 void Chat::addChar(HDC hdc, WCHAR c)
@@ -349,12 +352,13 @@ void Chat::carretRight(HDC hdc)
 #include <string>
 extern NetworkChat* networkChat;
 
+
 void Chat::fromNetwork(const char* who, WCHAR* msg)
 {
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(mainHWND, &ps);
 
-	placeChat(hdc, "192.168.1.2", msg);
+	placeChat(hdc, who, msg);
 
 	EndPaint(mainHWND, &ps);
 
@@ -386,6 +390,9 @@ void Chat::fromNetwork(const char* who, WCHAR* msg)
 	if (tchat == MAX_LINES) tchat = 0;
 	if (tchat == dchat) dchat++;
 	if (dchat == MAX_LINES) dchat = 0;
+
+	PostMessage(mainHWND, WM_PAINT, 0, 0);
+	
 }
 
 void Chat::enter(HDC hdc)

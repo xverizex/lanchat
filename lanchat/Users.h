@@ -10,8 +10,10 @@ class Users
 public:
 	RECT rect;
 	RECT title;
+	bool one;
 	std::vector<char *>users;
 	Users();
 	void DrawUsersLists(HDC hdc);
+	void addUser(char* who);
 };
 

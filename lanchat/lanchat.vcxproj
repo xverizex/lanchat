@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClInclude Include="Chat.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Idle.h" />
     <ClInclude Include="lanchat.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="Resource.h" />
@@ -138,6 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Chat.cpp" />
+    <ClCompile Include="Idle.cpp" />
     <ClCompile Include="lanchat.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="Users.cpp" />

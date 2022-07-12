@@ -7,6 +7,7 @@
 #include "Chat.h"
 #include <Windowsx.h>
 #include "Network.h"
+#include "Idle.h"
 #define MAX_LOADSTRING 100
 
 // Глобальные переменные:
@@ -22,6 +23,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 Users* UsersList;
 Chat* chat;
 NetworkChat* networkChat;
+Idle* idle;
 
 int pos_line = 0;
 HWND mainHWND;
@@ -54,7 +56,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
-
+    idle = new Idle();
 
     // Цикл основного сообщения:
     while (GetMessage(&msg, nullptr, 0, 0))
@@ -118,6 +120,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
       return FALSE;
    }
+   mainHWND = hWnd;
+
    SetWindowLongW(hWnd, GWL_STYLE, 0);
 
    ShowWindow(hWnd, nCmdShow);
@@ -141,6 +145,8 @@ bool moving = false;
 int x = 0;
 int y = 0;
 
+void threadc(void *param);
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -151,6 +157,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         chat = new Chat();
         networkChat = new NetworkChat();
         networkChat->chat = chat;
+        networkChat->users = UsersList;
         int ret = networkChat->init();
         if (ret == -1) exit(0);
     }
@@ -241,8 +248,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
         case VK_RETURN:
             chat->enter(hdc);
-            InvalidateRect(hWnd, &chat->rect, TRUE);
-            SendMessage(hWnd, WM_PAINT, 0, 0);
+            //InvalidateRect(hWnd, &chat->rect, TRUE);
+            //SendMessage(hWnd, WM_PAINT, 0, 0);
             EndPaint(hWnd, &ps);
             return 1;
             break;
@@ -252,7 +259,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
 
         InvalidateRect(hWnd, &chat->textInput, TRUE);
-        SendMessage(hWnd, WM_PAINT, 0, 0);
+        //SendMessage(hWnd, WM_PAINT, 0, 0);
 
 
         EndPaint(hWnd, &ps);
@@ -272,44 +279,38 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
 
         
-        SendMessage(hWnd, WM_PAINT, 0, 0);
+        //SendMessage(hWnd, WM_PAINT, 0, 0);
         InvalidateRect(hWnd, &chat->textInput, TRUE);
 
         EndPaint(hWnd, &ps);
         return 1;
     }
     break;
+
     case WM_PAINT:
         {
+        if (chat->initialize == false) {
+            RECT r;
+            r.left = UsersList->rect.left + UsersList->rect.right + 4;
+            r.top = 16;
+            r.right = 1024 - 16;
+            r.bottom = 512;
+            chat->setRect(&r);
+        }            
+        
+            RECT rect;
+
+            GetClientRect(hWnd, &rect);    
 
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            
 
-            RECT rect;
-            GetClientRect(hWnd, &rect);
             HBRUSH brush = CreateSolidBrush(RGB(0x71, 0xbc, 0xbf));
             FillRect(hdc, &rect, brush);
 
-#if 0
-            RECT r;
-            r.left = rect.left + 8;
-            r.top = rect.top + 8;
-            r.right = rect.right - 8;
-            r.bottom = rect.bottom - 8;
-            HBRUSH brush_frame = CreateSolidBrush(RGB(0x2f, 0x3e, 0x69));
-            SelectObject(hdc, brush_frame);
-            RoundRect(hdc, r.left, r.top, r.right, r.bottom, 10, 10);
-#endif
+
             UsersList->DrawUsersLists(hdc);
-            if (chat->initialize == false) {
-                RECT r;
-                r.left = UsersList->rect.left + UsersList->rect.right + 4;
-                r.top = 16;
-                r.right = 1024 - 16;
-                r.bottom = 512;
-                chat->setRect(&r);
-            }
+
             chat->draw(hdc);
             CreateCaret(hWnd, (HBITMAP)0, 1, 14);
             ShowCaret(hWnd);
