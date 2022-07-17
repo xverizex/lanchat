@@ -286,6 +286,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         return 1;
     }
     break;
+    case WM_USER:
+        RECT rect;
+
+        GetClientRect(hWnd, &rect);
+        InvalidateRect(hWnd, &rect, TRUE);
+        break;
 
     case WM_PAINT:
         {

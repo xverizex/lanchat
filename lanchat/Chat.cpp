@@ -39,6 +39,7 @@ void Chat::setRect(RECT* r)
 
 void Chat::draw(HDC hdc)
 {
+
 	HPEN pen = CreatePen(PS_SOLID, 0, RGB(0x00, 0x00, 0x00));
 	SelectObject(hdc, pen);
 
@@ -174,7 +175,6 @@ void Chat::draw(HDC hdc)
 		}
 	}
 	
-
 }
 
 void Chat::addChar(HDC hdc, WCHAR c)
@@ -391,8 +391,8 @@ void Chat::fromNetwork(const char* who, WCHAR* msg)
 	if (tchat == dchat) dchat++;
 	if (dchat == MAX_LINES) dchat = 0;
 
-	PostMessage(mainHWND, WM_PAINT, 0, 0);
-	
+	PostMessage(mainHWND, WM_USER, 0, 0);
+	//InvalidateRect(mainHWND, &rect, FALSE);
 }
 
 void Chat::enter(HDC hdc)

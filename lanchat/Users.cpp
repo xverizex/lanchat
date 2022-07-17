@@ -23,7 +23,7 @@ void Users::addUser(char* who)
 {
 	users.push_back(who);
 	//InvalidateRect(mainHWND, &rect, TRUE);
-	PostMessage(mainHWND, WM_PAINT, 0, 0);
+	PostMessage(mainHWND, WM_USER, 0, 0);
 }
 
 void Users::DrawUsersLists(HDC hdc)
